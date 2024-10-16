@@ -1,5 +1,4 @@
 import * as React from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,37 +10,58 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useState } from 'react';
 
-export function Loginform() {
+interface LoginformProps {
+  onSubmit: (username: string, password: string) => void;
+  onGoBack: () => void;
+}
+
+export function Loginform({ onSubmit, onGoBack }: LoginformProps) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(username, password);
+  };
+
   return (
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Login</CardTitle>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Username</Label>
-              <Input id="name" placeholder="Username" />
+              <Label htmlFor="username">Username</Label>
+              <Input 
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+                required
+              />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="framework">Password</Label>
-              <Input id="name" type= "password" placeholder="Username" />
+              <Label htmlFor="password">Password</Label>
+              <Input 
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required 
+              />
             </div>
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Go Back </Button>
-        <Button>Enter</Button>
+        <Button variant="outline" onClick={onGoBack}>Go Back</Button>
+        <Button type="submit" onClick={handleSubmit}>Enter</Button>
       </CardFooter>
     </Card>
   )
