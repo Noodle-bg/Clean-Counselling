@@ -1,61 +1,116 @@
 // app/page.tsx
 'use client';
-
 import { useState } from 'react';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from './context/UserContext';  // Import the useUser hook
 
-type College = {
-  College_Name: string;
-  Seat_Freezing_Price: number;
-};
+export default function Home() {
+  const router = useRouter();
+  const { setUser } = useUser();  // Destructure setUser from the context
+  const [userType, setUserType] = useState<'student' | 'college' | null>(null);
+  const [loginId, setLoginId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  const handleLogin = async () => {
+    setError('');
+    setLoading(true);
 
+    if (!loginId || !password) {
+      setError('Please fill in all fields.');
+      setLoading(false);
+      return;
+    }
 
-const Home = () => {
-  const [colleges, setColleges] = useState<College[]>([]);
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userType, loginId, password }),
+      });
 
-  const fetchColleges = async () => {
-    const response = await fetch('/api/colleges');
-    const data = await response.json();
-    setColleges(data.colleges);
+      const result = await response.json();
+      console.log(result.data)
+      if (result && userType === 'student') {
+        // Set the user context with the received data
+        setUser(result.data?.[0]);
+
+        // Redirect to student dashboard
+        router.push('/student_dashboard');
+      } else if (result && userType === 'college') {
+        // Set the user context with college data and redirect to college dashboard
+        setUser(result.data?.[0]);
+        router.push('/college_dashboard');
+      } else {
+        setError('Invalid login credentials.');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
-    <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8 animate-bounce">
-        Clean Counselling
-      </h1>
-      <p className="text-lg text-gray-400 mb-12">Your one-stop platform for college seat counseling</p>
+    <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col justify-center items-center p-8">
+      <div className="max-w-2xl text-center space-y-6">
+        <h1 className="text-5xl font-bold text-teal-400">Clean Counselling</h1>
+        <p className="text-lg text-gray-300">Simplifying the college counseling experience.</p>
 
-      <div className="flex space-x-4">
-        <a href="/login" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 ease-in-out transform hover:scale-110">
-          Student Login
-        </a>
-        <a href="/admin-login" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 ease-in-out transform hover:scale-110">
-          Admin Login
-        </a>
-        <a href="/college-login" className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 ease-in-out transform hover:scale-110">
-          College Login
-        </a>
+        {!userType ? (
+          <>
+            <p className="text-lg text-gray-300">Login as..</p>
+            <div className="mt-8 space-x-4">
+              <button
+                className="px-6 py-3 bg-teal-500 text-gray-900 font-semibold rounded-full"
+                onClick={() => setUserType('student')}
+              >
+                Student
+              </button>
+              <button
+                className="px-6 py-3 bg-teal-500 text-gray-900 font-semibold rounded-full"
+                onClick={() => setUserType('college')}
+              >
+                College
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-lg text-gray-300">{userType === 'student' ? 'Student Login' : 'College Login'}</p>
+            <input
+              type="text"
+              placeholder={`${userType === 'student' ? 'Student ID' : 'College ID'}`}
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 text-white"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 text-white"
+            />
+            {error && <p className="text-red-500">{error}</p>}
+            <button
+              onClick={handleLogin}
+              className="px-6 py-3 bg-teal-500 text-gray-900 font-semibold rounded-full"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setUserType(null)}
+              className="px-6 py-2 text-gray-300 underline"
+            >
+              Go back
+            </button>
+          </div>
+        )}
       </div>
-      <button
-        onClick={fetchColleges}
-        className="px-4 py-2 bg-red-500 text-white font-bold hover:bg-red-600 rounded transition-all duration-300 ease-in-out transform hover:scale-110"
-      >
-        Get Colleges
-      </button>
-      <ul className="mt-4 space-y-2">
-        {colleges.map((college) => (
-          <li key={college.College_Name} className="text-lg">
-            {college.College_Name} - ${college.Seat_Freezing_Price}
-          </li>
-        ))}
-      </ul>
-
-      <footer className="mt-20 text-gray-500">
-        &copy; 2024 Clean Counselling. All rights reserved.
-      </footer>
     </div>
   );
-};
-
-export default Home;
+}
