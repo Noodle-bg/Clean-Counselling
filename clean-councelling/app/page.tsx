@@ -42,7 +42,7 @@ export default function Home() {
         router.push('/student_dashboard');
       } else if (result && userType === 'college') {
         // Set the user context with college data and redirect to college dashboard
-        setUser(result.data?.[0]);
+        setUser(result.data);
         router.push('/college_dashboard');
       } else {
         setError('Invalid login credentials.');

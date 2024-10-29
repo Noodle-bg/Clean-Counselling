@@ -1,12 +1,16 @@
-// db.ts
+// lib/db.tsx
+
+import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
+
+dotenv.config();
 
 export async function getConnection() {
     const connection = await mysql.createConnection({
-        host: process.env.DATABASE_HOST,
-        user: process.env.DATABASE_USER,
-        password: process.env.DATABASE_PASSWORD,
-        database: process.env.DATABASE_NAME,
+        host: 'localhost',
+        user: 'root',
+        password: 'password',
+        database: 'clean_counselling',
     });
     return connection;
 }
