@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
             if (userType === 'student') {
                 // Fetch student details
                 const studentQuery = `select student_rank,email,Student_name,Phone_Number,Parent_name,Category,Student_id from Students where student_id = 
-(select student_id from LoginInfo where type = 'student' and login=? and password=?);`;
+(select student_id from LoginInfo where type = 'student' and login=? and password=?);`; // complex query3? 
                 const [studentDetails] = await connection.execute(studentQuery, [loginId, password]);
                 console.log("query executed")
                 return NextResponse.json({
@@ -52,7 +52,7 @@ WHERE College_Id = (
     AND login = ? 
     AND password = ?
 );
-`;
+`; // nested 1 
                 const [details] = await connection.execute(query, [loginId, password])
                 console.log("query executed");
                 return NextResponse.json({
