@@ -8,7 +8,7 @@ import College_Crud from '@/app/components/Collegeseatupdatecrud';
 const College_Dashboard = () => {
   return (
     <College_Crud/>
-
+    
   
   )
 }
