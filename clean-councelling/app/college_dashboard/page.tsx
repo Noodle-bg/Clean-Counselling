@@ -2,7 +2,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import College_Crud from '@/app/components/Collegeseatupdatecrud';
+import College_Crud from '@/app/components/COLLEGE_END/Collegeseatupdatecrud';
 
 
 const College_Dashboard = () => {

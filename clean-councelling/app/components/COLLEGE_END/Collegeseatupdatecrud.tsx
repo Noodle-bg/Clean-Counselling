@@ -36,7 +36,7 @@ const College_Crud = () => {
             return;
         }
 
-        const response = await fetch('/api/colleges', {
+        const response = await fetch('/api/COLLEGE_END/colleges', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -60,7 +60,7 @@ const College_Crud = () => {
             return;
         }
 
-        const response = await fetch('/api/colleges/updates', {
+        const response = await fetch('/api/COLLEGE_END/colleges/updates', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
