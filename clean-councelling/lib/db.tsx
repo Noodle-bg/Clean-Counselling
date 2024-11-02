@@ -40,4 +40,5 @@ export async function transaction(callback: (conn: mysql.PoolConnection) => Prom
     } finally {
         connection.release();
     }
+
 }

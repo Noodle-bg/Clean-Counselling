@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
             if (userType === 'student') {
                 // Fetch student details
                 const studentQuery = `select student_rank,email,Student_name,Phone_Number,Parent_name,Category,Student_id from Students where student_id = 
-(select student_id from logininfo where type = 'student' and login=? and password=?);`;
+(select student_id from LoginInfo where type = 'student' and login=? and password=?);`; // complex query3? 
                 const [studentDetails] = await connection.execute(studentQuery, [loginId, password]);
                 console.log("query executed")
                 return NextResponse.json({
@@ -41,12 +41,18 @@ export async function POST(req: NextRequest) {
                 });
             }
             else if (userType === 'college') {
-                const query = `SELECT college_name,seat_freezing_price,total_seats,course_name FROM
-                seatDistribution NATURAL JOIN colleges NATURAL JOIN courses WHERE
-                college_id = (
-                SELECT college_id FROM loginInfo WHERE
-                type = 'college' AND login = ? AND password = ?
-                );`;
+                const query = `SELECT College_Name, Seat_Freezing_price, Total_Seats, Course_Name 
+FROM SeatDistribution 
+NATURAL JOIN Colleges 
+NATURAL JOIN Courses 
+WHERE College_Id = (
+    SELECT College_Id 
+    FROM LoginInfo 
+    WHERE type = 'college' 
+    AND login = ? 
+    AND password = ?
+);
+`; // nested 1 
                 const [details] = await connection.execute(query, [loginId, password])
                 console.log("query executed");
                 return NextResponse.json({

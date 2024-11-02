@@ -1,21 +1,16 @@
-import React, { use } from 'react'
-import { useUser } from '../context/UserContext'
+// app/college_dashboard.tsx
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import College_Crud from '@/app/components/Collegeseatupdatecrud';
+
 
 const College_Dashboard = () => {
-    const {user} = useUser();
-    if (!user){
-        return (
-            <p>Loading...</p>
-        );
-    }
-    return (
-        <div>
-            <p>{user?.college_name}</p>
-            <ul>
-                <li>{user?.course_name} {}</li>
-            </ul>
-        </div>
-    )
+  return (
+    <College_Crud/>
+    
+  
+  )
 }
 
-export default College_Dashboard
+export default College_Dashboard; 
