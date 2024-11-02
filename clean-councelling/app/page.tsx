@@ -23,14 +23,15 @@ export default function Home() {
             return;
         }
 
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userType, loginId, password }),
-            });
+    try {
+      const response = await fetch('/api/COMMON_END/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userType, loginId, password }),
+      });
+
 
             const result = await response.json();
 
