@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/COMMON_END/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
