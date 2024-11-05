@@ -2,10 +2,10 @@
 import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST ?? 'localhost',
+    user: process.env.DATABASE_USER ?? 'root',
+    password: process.env.DATABASE_PASSWORD ?? 'password',
+    database: process.env.DATABASE_NAME ?? 'clean_counselling',
     waitForConnections: true,
     connectionLimit: 10, // Adjust this limit as per your requirement
     queueLimit: 0

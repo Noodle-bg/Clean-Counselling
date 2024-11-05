@@ -12,29 +12,27 @@ const Result = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const loginId = searchParams.get('loginId');
-    const password = searchParams.get('password');
     const [allocation, setAllocation] = useState<AllocationResult | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchResults();
-    }, [loginId, password]);
+    }, [loginId]);
 
     const fetchResults = async () => {
-        if (!loginId || !password) {
+        if (!loginId) {
             setError('Login credentials are required');
             setLoading(false);
             return;
         }
 
         try {
-            const response = await fetch('/api/STUDENT_END/results', {
-                method: 'POST',
+            const response = await fetch(`/api/STUDENT_END/results/${loginId}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ loginId, password })
+                }
             });
 
             if (!response.ok) {
@@ -53,6 +51,20 @@ const Result = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFreeze = () => {
+        if (allocation) {
+            // router.push(`/payment-portal?loginId=${loginId}&collegeName=${allocation.College_Name}&courseName=${allocation.Course_Name}`);
+            alert('Freeze functionality coming soon!');
+
+
+        }
+    };
+
+    const handleSlide = () => {
+        // Implement slide functionality
+        alert('Slide functionality coming soon!');
     };
 
     if (loading) {
@@ -99,13 +111,13 @@ const Result = () => {
                     <div className="flex justify-center gap-6">
                         <button 
                             className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
-                            onClick={() => alert('Freeze functionality coming soon!')}
+                            onClick={handleFreeze}
                         >
                             Freeze Seat
                         </button>
                         <button 
                             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
-                            onClick={() => alert('Slide functionality coming soon!')}
+                            onClick={handleSlide}
                         >
                             Slide to Next Round
                         </button>
