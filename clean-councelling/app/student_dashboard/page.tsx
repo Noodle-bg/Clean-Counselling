@@ -59,6 +59,15 @@ export default function StudentDashboard() {
                     onCancel={() => setShowPreferencesForm(false)}
                 />
             )}
+
+            <div>
+                <button
+                    className="mt-8 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition"
+                    onClick={() => router.push('/')}
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     );
 }

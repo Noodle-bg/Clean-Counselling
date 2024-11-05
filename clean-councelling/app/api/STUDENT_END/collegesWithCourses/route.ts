@@ -3,7 +3,7 @@ import { getConnection } from '@/lib/db';
 
 export async function GET() {
     const connection = await getConnection();
-    const [rows] = await connection.query(`
+    const [rows, fields]: [any[], any[]] = await connection.query(`
         SELECT Colleges.College_Id, Colleges.College_Name, Courses.Course_Id, Courses.Course_Name
         FROM Colleges
         JOIN SeatDistribution ON Colleges.College_Id = SeatDistribution.College_Id
