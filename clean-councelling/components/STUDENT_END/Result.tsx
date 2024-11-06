@@ -62,6 +62,8 @@ const Result = () => {
 
     const handleFreeze = () => {
         console.log('Freezing seat:', allocation);
+        router.push(`/payments?loginId=${loginId}`); 
+
     };
 
     const handleSlide = () => {
