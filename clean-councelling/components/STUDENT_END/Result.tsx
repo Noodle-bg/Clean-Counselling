@@ -44,7 +44,7 @@ const Result = () => {
                 setAllocation(data.data[0]);
             } else {
                 setError('No allocation found');
-            }
+            }  
         } catch (err) {
             setError('Error fetching results');
             console.error(err);
