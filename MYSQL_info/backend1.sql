@@ -5,6 +5,45 @@ TRUNCATE TABLE SeatAllocation;
 
 -- stuff for continuity of databases 
 
+
+-- Truncate the existing LoginInfo table
+TRUNCATE TABLE LoginInfo;
+
+-- Insert the student data
+INSERT INTO LoginInfo (Login_Id, Type, Login, Password, Student_Id, College_Id)
+VALUES
+  (1, 'student', 'alice.smith', 'password123', 1, NULL),
+  (2, 'student', 'bob.johnson', 'securePass456', 2, NULL), 
+  (3, 'student', 'charlie.williams', 'strongPass789', 3, NULL),
+  (4, 'student', 'diana.brown', 'myPass321', 4, NULL),
+  (5, 'student', 'ethan.jones', 'bestPass654', 5, NULL),
+  (6, 'student', 'fiona.garcia', 'greatPass234', 6, NULL),
+  (7, 'student', 'george.martinez', 'coolPass456', 7, NULL),
+  (8, 'student', 'hannah.rodriguez', 'awesomePass789', 8, NULL),
+  (9, 'student', 'ian.wilson', 'incrediblePass321', 9, NULL),
+  (10, 'student', 'jessica.lee', 'amazingPass654', 10, NULL),
+  (11, 'student', 'kevin.harris', 'superPass987', 11, NULL),
+  (12, 'student', 'laura.clark', 'fantasyPass654', 12, NULL),
+  (13, 'student', 'mason.lewis', 'legendaryPass321', 13, NULL),
+  (14, 'student', 'nora.walker', 'epicPass789', 14, NULL),
+  (15, 'student', 'oliver.hall', 'mythicPass456', 15, NULL);
+
+-- Insert the college data
+INSERT INTO LoginInfo (Login_Id, Type, Login, Password, Student_Id, College_Id)
+VALUES
+  (16, 'college', 'engg_college_a', 'collegePass001', NULL, 1),
+  (17, 'college', 'med_college_b', 'collegePass002', NULL, 2),
+  (18, 'college', 'arts_college_c', 'collegePass003', NULL, 3),
+  (19, 'college', 'sci_college_d', 'collegePass004', NULL, 4),
+  (20, 'college', 'comm_college_e', 'collegePass005', NULL, 5);
+
+-- Insert the admin data
+INSERT INTO LoginInfo (Login_Id, Type, Login, Password, Student_Id, College_Id)
+VALUES
+  (21, 'admin', 'admin1', 'adminPass123', NULL, NULL),
+  (22, 'admin', 'admin2', 'adminSecure456', NULL, NULL),
+  (23, 'admin', 'admin3', 'adminStrong789', NULL, NULL);
+
 UPDATE Colleges SET College_Name = 'Engineering College A', Seat_Freezing_Price = 500.00 WHERE College_Id = '1';
 UPDATE Colleges SET College_Name = 'Medical College B', Seat_Freezing_Price = 220.00 WHERE College_Id = '2';
 UPDATE Colleges SET College_Name = 'Arts College C', Seat_Freezing_Price = 230.00 WHERE College_Id = '3';
