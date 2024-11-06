@@ -151,14 +151,17 @@ const College_Crud = () => {
                     </button>
                 </div>
             </div>
-            <div className="mt-8 text-center">
+            <div>
                 <button
+                    className="mt-8 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition"
                     onClick={() => router.push('/')}
-                    className="text-gray-300 hover:text-teal-400"
                 >
-                    Go back to login
+                    Logout
                 </button>
-                </div>
+            </div>
+
+
+
         </div>
     );
 };

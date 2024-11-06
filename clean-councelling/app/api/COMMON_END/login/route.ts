@@ -1,4 +1,4 @@
-// app/api/login/route.ts
+// app/api/COMMON_END/login/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 import { getConnection } from '@/lib/db';
@@ -48,7 +48,7 @@ NATURAL JOIN Courses
 WHERE College_Id = (
     SELECT College_Id 
     FROM LoginInfo 
-    WHERE type = 'college' 
+    WHERE type = 'college' y
     AND login = ? 
     AND password = ?
 );
