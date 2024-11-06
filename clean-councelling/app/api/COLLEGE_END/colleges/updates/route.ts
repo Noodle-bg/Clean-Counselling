@@ -1,3 +1,4 @@
+// app/api/COLLEGE_END/colleges/updates/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getConnection } from '@/lib/db';
 import { RowDataPacket } from 'mysql2/promise';

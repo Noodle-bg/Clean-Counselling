@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: RequestParams) {
             SELECT * from Final_Allocations_Name
             WHERE Student_Name = ?;
         `;
-// i wrote student_name instead of student_id for final_allocations_name, but it is actually student_id only 
+        // i wrote student_name instead of student_id for final_allocations_name, but it is actually student_id only 
         const connection = await getConnection();
         const [details] = await connection.execute(query, [studentId]);
 

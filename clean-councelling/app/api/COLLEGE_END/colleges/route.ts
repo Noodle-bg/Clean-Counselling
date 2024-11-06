@@ -1,4 +1,4 @@
-// app/api/colleges/route.ts
+// app/api/COLLEGE_END/colleges/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 import { getConnection } from '@/lib/db';
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         // nested 2 
         const connection = await getConnection();
 
-        const [details] = await connection.execute(query, [loginId, password]); 
+        const [details] = await connection.execute(query, [loginId, password]);
 
         if (Array.isArray(details) && details.length > 0) {
             return NextResponse.json({

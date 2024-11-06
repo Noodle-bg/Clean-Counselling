@@ -1,3 +1,4 @@
+// app/api/collegesWithCourses/route.ts
 import { NextResponse } from 'next/server';
 import { getConnection } from '@/lib/db';
 

@@ -1,4 +1,5 @@
 'use client';
+// components/COLLEGE_END/Collegeseatupdatecrud.tsx
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -93,7 +94,7 @@ const College_Crud = () => {
                 <h1 className="text-5xl font-bold text-teal-400">College Courses</h1>
                 <p className="text-lg text-gray-300">Explore available courses and their seat distribution.</p>
             </div>
-            
+
             {/* Display courses */}
             <div className="mt-8 space-y-6 w-full max-w-2xl mx-auto flex flex-col items-center">
                 {courses.map((course, index) => (
