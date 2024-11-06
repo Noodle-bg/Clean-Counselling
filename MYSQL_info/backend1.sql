@@ -44,6 +44,8 @@ UPDATE SeatDistribution SET Total_Seats = 3 WHERE College_Id = '10' AND Course_I
 
 select * from SeatDistribution; 
 
+
+
 DELIMITER //
 
 CREATE PROCEDURE seat_allocation_results()
@@ -75,12 +77,12 @@ BEGIN
     -- Declare a handler to set the 'done' flag when the cursor is exhausted
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
-   
+	
     CREATE TEMPORARY TABLE IF NOT EXISTS temp_table AS 
     SELECT p.Student_Id, p.College_Id, p.Course_Id, p.Preference_Order, s.Category, s.student_rank  
     FROM Preferences p 
     JOIN Students s ON p.Student_Id = s.Student_Id;
-
+    
     
     CREATE TABLE IF NOT EXISTS Final_Allocations (
         Student_Id INT PRIMARY KEY,
@@ -124,15 +126,7 @@ BEGIN
     DROP TEMPORARY TABLE IF EXISTS temp_table;
 
 
-    SELECT * FROM Final_Allocations;
     
-END //
-
-DELIMITER ;
-	
-call seat_allocation_results; 
--- select * from Final_Allocations; 
-
 CREATE TABLE IF NOT EXISTS Final_Allocations_Name (
     Student_Name VARCHAR(255),
     Course_Name VARCHAR(255),
@@ -140,7 +134,7 @@ CREATE TABLE IF NOT EXISTS Final_Allocations_Name (
     PRIMARY KEY (Student_Name, Course_Name, College_Name)
 );
 
-INSERT INTO Final_Allocations_Name (Student_Name, Course_Name, College_Name)
+INSERT IGNORE INTO Final_Allocations_Name (Student_Name, Course_Name, College_Name)
 SELECT 
     s.Student_Id,
     c.Course_Name,
@@ -154,7 +148,23 @@ JOIN
 JOIN 
     Colleges co ON fa.College_Id = co.College_Id;
 
-SELECT * from Final_Allocations_Name; 
+SELECT * from Final_Allocations_Name;
+
+    
+END //
+
+DELIMITER ;
+
+
+call seat_allocation_results; 
+
+
+
+
+
+
+
+
 
 
 -- SELECT * from Final_Allocations_Name
@@ -166,6 +176,43 @@ SELECT * from Final_Allocations_Name;
 -- 	AND password = 'password123' ); 
 --     
 -- drop table Final_Allocations_Name; 
+
+
+
+INSERT INTO SeatAllocation(Student_Id, College_Id, Course_Id, Round_Id, Status, Decision) 
+SELECT Student_Id, College_Id, Course_Id, 1, 'allocated','freeze' from Final_Allocations; 
+SELECT * from SeatAllocation; 
+
+
+-- SELECT fa.Student_Name, co.Seat_Freezing_Price*
+-- (SELECT ci.Fee_Percentage from CategoryInfo ci WHERE Category = 
+-- (SELECT Category FROM Students WHERE Student_Id = 
+-- (SELECT Student_Id FROM LoginInfo WHERE Login = 'alice.smith')))
+--  FROM Final_Allocations_Name fa 
+-- JOIN Colleges co ON fa.College_Name = co.College_Name WHERE Student_Name = (SELECT Login_Id FROM LoginInfo WHERE Login = 'alice.smith'); 
+
+
+
+
+
+-- WITH StudentCategory AS (
+--     SELECT s.Category
+--     FROM Students s
+--     JOIN LoginInfo li ON li.Login = 'bob.johnson'
+--     WHERE s.Student_Id = li.Student_Id
+-- ),
+-- FeePercentage AS (
+--     SELECT ci.Fee_Percentage
+--     FROM CategoryInfo ci
+--     JOIN StudentCategory sc ON ci.Category = sc.Category
+-- )
+-- SELECT fa.Student_Name, 
+--        co.Seat_Freezing_Price * fp.Fee_Percentage
+-- FROM Final_Allocations_Name fa
+-- JOIN Colleges co ON fa.College_Name = co.College_Name
+-- JOIN LoginInfo li ON fa.Student_Name = li.Login_Id
+-- JOIN FeePercentage fp ON 1 = 1
+-- WHERE li.Login = 'bob.johnson';
 
 
 
