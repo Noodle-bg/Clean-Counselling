@@ -4,7 +4,7 @@
 import { useUser } from '../context/UserContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import PreferencesForm from '../components/STUDENT_END/PreferencesForm';
+import PreferencesForm from '../../components/STUDENT_END/PreferencesForm';
 
 export default function StudentDashboard() {
     const { user } = useUser();

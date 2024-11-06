@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-// after the timer add router.push(`/results?loginId=${loginId}&password=${password}`);
+// after the timer add 
 const counselingdone = () => {
   return (
     <div>

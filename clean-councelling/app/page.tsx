@@ -37,7 +37,8 @@ export default function Home() {
 
             if (result && userType === 'student') {
                 setUser(result.data?.[0]);
-                router.push('/student_dashboard');
+                // router.push('/student_dashboard');
+                router.push(`/results?loginId=${loginId}&password=${password}`);
             } else if (result && userType === 'college') {
                 setUser(result.data);
                 router.push(`/college_dashboard?loginId=${loginId}&password=${password}`);
