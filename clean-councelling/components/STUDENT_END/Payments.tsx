@@ -13,6 +13,8 @@ const Payments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>('Credit Card');
 
   useEffect(() => {
     fetchPaymentDetails();
@@ -37,7 +39,6 @@ const Payments = () => {
       const data = await response.json();
       console.log('API Response:', data);
 
-
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch results');
       }
@@ -60,15 +61,18 @@ const Payments = () => {
   };
 
   const handlePayment = async () => {
-    if (!paymentDetails) return;
+    setShowPaymentForm(true);
+  };
 
+  const handleConfirmPayment = async () => {
+    if (!paymentDetails) return;
     const amount = Number(paymentDetails.Seat_Freezing_Price) || 0;
-    alert(`Proceeding to payment of ₹${amount}`);
+    alert(`Proceeding to payment of ₹${amount} using ${paymentMethod}`);
+    // Add payment processing logic here
   };
 
   const handleCancel = () => {
-    router.push('/'); 
-    
+    router.push('/');
   };
 
   if (loading) {
@@ -94,6 +98,75 @@ const Payments = () => {
   }
 
   const seatFreezingPrice = Number(paymentDetails?.Seat_Freezing_Price) || 0;
+
+  if (showPaymentForm) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col justify-center items-center p-8">
+        <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-8">
+          <h1 className="text-3xl font-bold text-teal-400 mb-8 text-center">
+            Payment Form
+          </h1>
+
+          <div className="space-y-6">
+            <div className="bg-gray-700 p-6 rounded-lg">
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 mb-1">Login ID:</label>
+                  <input
+                    type="text"
+                    value={loginId || ''}
+                    readOnly
+                    className="w-full p-2 bg-gray-600 text-gray-100 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-1">Amount:</label>
+                  <input
+                    type="text"
+                    value={`₹${seatFreezingPrice.toLocaleString()}`}
+                    readOnly
+                    className="w-full p-2 bg-gray-600 text-gray-100 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-1">Payment Method:</label>
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-full p-2 bg-gray-600 text-gray-100 rounded"
+                  >
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Net Banking">Net Banking</option>
+                    <option value="UPI">UPI</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={handleConfirmPayment}
+                    className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded flex-1"
+                  >
+                    Confirm Payment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPaymentForm(false)}
+                    className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex-1"
+                  >
+                    Back
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col justify-center items-center p-8">
@@ -123,20 +196,18 @@ const Payments = () => {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-4 mt-8">
-            <button
-              onClick={handlePayment}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
-            >
-              Proceed to Payment
-            </button>
-            <button
-              onClick={handleCancel}
-              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
-            >
-              Cancel
-            </button>
-          </div>
+           <button
+            onClick={handlePayment}
+            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200 w-full"
+          >
+            Proceed to Payment
+          </button>
+          <button
+            onClick={() => router.back()}
+            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200 w-full"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     </div>

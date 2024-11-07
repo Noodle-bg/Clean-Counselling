@@ -118,8 +118,16 @@ const Result = () => {
                             >
                                 Slide to Next Round
                             </button>
+
                         </div>
+                        
                     </div>
+                    <button
+            onClick={() => router.back()}
+            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200 w-200"
+          >
+            Go Back
+          </button>
                 </div>
             ) : (
                 <div className="text-2xl text-red-500">No allocation data available</div>
