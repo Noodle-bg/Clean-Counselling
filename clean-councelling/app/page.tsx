@@ -16,29 +16,32 @@ export default function Home() {
     const handleLogin = async () => {
         setError('');
         setLoading(true);
-
+    
         if (!loginId || !password) {
             setError('Please fill in all fields.');
             setLoading(false);
             return;
         }
-
-    try {
-      const response = await fetch('/api/COMMON_END/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userType, loginId, password }),
-      });
-
-
+    
+        try {
+            const response = await fetch('/api/COMMON_END/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userType, loginId, password }),
+            });
+    
             const result = await response.json();
-
+    
             if (result && userType === 'student') {
+                // Store credentials in sessionStorage (safer than localStorage)
+                sessionStorage.setItem('studentLoginId', loginId);
+                sessionStorage.setItem('studentPassword', password);
+                
                 setUser(result.data?.[0]);
-                // router.push('/student_dashboard');
-                router.push(`/results?loginId=${loginId}&password=${password}`);
+                router.push('/student_dashboard');
+                
             } else if (result && userType === 'college') {
                 setUser(result.data);
                 router.push(`/college_dashboard?loginId=${loginId}&password=${password}`);
