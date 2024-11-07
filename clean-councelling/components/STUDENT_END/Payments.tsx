@@ -1,7 +1,8 @@
 'use client';
+//components/STUDENT_END/Payments.tsx
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-
+import { v4 as uuidv4 } from 'uuid';
 interface PaymentDetails {
   Seat_Freezing_Price?: string | number;
 }
@@ -67,8 +68,36 @@ const Payments = () => {
   const handleConfirmPayment = async () => {
     if (!paymentDetails) return;
     const amount = Number(paymentDetails.Seat_Freezing_Price) || 0;
+    const paymentId = uuidv4(); 
     alert(`Proceeding to payment of ₹${amount} using ${paymentMethod}`);
-    // Add payment processing logic here
+
+    const response = await fetch(`/api/STUDENT_END/payments/portal/${loginId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        paymentId: paymentId,    
+        loginId: loginId,        
+        amount: amount,          
+      }),
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      alert(`Payment processed successfully!\nPayment ID: ${paymentId}`);
+      // You can add receipt generation or redirect logic here
+      router.push('/student_dashboard'); // or wherever you want to redirect after success
+    } 
+    else{
+      alert("Payment failed"); 
+      
+    }
+        
+
+
+
+    
   };
 
   const handleCancel = () => {
