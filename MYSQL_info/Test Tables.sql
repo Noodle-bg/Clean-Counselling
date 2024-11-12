@@ -61,7 +61,7 @@ CREATE TABLE SeatAllocation (
     Course_Id INT,
     Round_Id INT,
     Status ENUM('allocated', 'not allocated'),
-    Decision ENUM('freeze', 'float', 'slide'),
+    Decision ENUM('freeze', 'slide'),
     PRIMARY KEY (Student_Id, College_Id, Course_Id),
     FOREIGN KEY (Student_Id) REFERENCES Students(Student_Id),
     FOREIGN KEY (College_Id) REFERENCES Colleges(College_Id),

@@ -1,4 +1,3 @@
-// app/api/COLLEGE_END/colleges/updates/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getConnection } from '@/lib/db';
 import { RowDataPacket } from 'mysql2/promise';
@@ -29,22 +28,27 @@ export async function PUT(req: NextRequest) {
 
         const collegeId = college[0].College_Id;
 
+        // Calculate the updated seat distribution values
+        const generalSeats = Math.floor(totalSeats * 0.55);
+        const obcSeats = Math.floor(totalSeats * 0.15);
+        const scstSeats = Math.floor(totalSeats * 0.30);
+
         // Update seat and price data in SeatDistribution and Colleges
         await connection.execute(
             `UPDATE SeatDistribution AS s 
              JOIN Colleges AS c ON s.College_Id = c.College_Id 
-             SET s.Total_Seats = ?, c.Seat_Freezing_Price = ? 
+             SET s.Total_Seats = ?, c.Seat_Freezing_Price = ?, s.remaining_general = ?, s.remaining_obc = ?, s.remaining_scst = ?
              WHERE s.College_Id = ? AND s.Course_Id IN (
                  SELECT Course_Id FROM Courses WHERE Course_Name = ?
-             );`,
-            [totalSeats, seatFreezingPrice, collegeId, courseName]
+             )`,
+            [totalSeats, seatFreezingPrice, generalSeats, obcSeats, scstSeats, collegeId, courseName]
         );
 
         await connection.commit();
 
         return NextResponse.json({
             message: 'Seats and price updated successfully',
-            data: { collegeName, courseName, totalSeats, seatFreezingPrice }
+            data: { collegeName, courseName, totalSeats, seatFreezingPrice, generalSeats, obcSeats, scstSeats }
         });
     } catch (error) {
         if (connection) await connection.rollback();
