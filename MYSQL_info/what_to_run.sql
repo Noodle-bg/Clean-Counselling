@@ -187,6 +187,131 @@ END //
 DELIMITER ;
 
 
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetCurrentRoundStatus()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_round_number INT;
+    DECLARE v_session_name VARCHAR(100);
+    DECLARE v_start_date TIMESTAMP;
+    DECLARE v_end_date TIMESTAMP;
+    DECLARE v_current_round_found BOOLEAN DEFAULT FALSE;
+    
+    -- Cursor for all rounds ordered by start date
+    DECLARE round_cursor CURSOR FOR 
+        SELECT Round_Number, Session_Name, start_Date, end_date
+        FROM CounselingSessions
+        ORDER BY start_Date;
+    
+    -- Handler for when cursor reaches end
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    -- Create temporary table to store result
+    DROP TEMPORARY TABLE IF EXISTS temp_round_status;
+    CREATE TEMPORARY TABLE temp_round_status (
+        Round_Number INT,
+        Session_Name VARCHAR(100),
+        start_Date TIMESTAMP,
+        end_date TIMESTAMP,
+        round_status VARCHAR(20),
+        next_round_number INT,
+        next_round_start TIMESTAMP
+    );
+    
+    -- Open cursor and loop through rounds
+    OPEN round_cursor;
+    
+    read_loop: LOOP
+        FETCH round_cursor INTO v_round_number, v_session_name, v_start_date, v_end_date;
+        
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Check if this is the current or next round
+        IF NOT v_current_round_found THEN
+            IF CURRENT_TIMESTAMP BETWEEN v_start_date AND v_end_date THEN
+                -- Current round
+                INSERT INTO temp_round_status
+                SELECT 
+                    v_round_number,
+                    v_session_name,
+                    v_start_date,
+                    v_end_date,
+                    'current',
+                    LEAD(Round_Number) OVER (),
+                    LEAD(start_Date) OVER ()
+                FROM CounselingSessions
+                WHERE Round_Number = v_round_number;
+                
+                SET v_current_round_found = TRUE;
+                
+            ELSEIF CURRENT_TIMESTAMP < v_start_date THEN
+                -- Next round
+                INSERT INTO temp_round_status
+                SELECT 
+                    v_round_number,
+                    v_session_name,
+                    v_start_date,
+                    v_end_date,
+                    'next',
+                    NULL,
+                    NULL
+                FROM CounselingSessions
+                WHERE Round_Number = v_round_number;
+                
+                SET v_current_round_found = TRUE;
+            END IF;
+        END IF;
+    END LOOP;
+    
+    CLOSE round_cursor;
+    
+    -- If no current or next round found, get the last completed round
+    IF NOT v_current_round_found THEN
+        INSERT INTO temp_round_status
+        SELECT 
+            Round_Number,
+            Session_Name,
+            start_Date,
+            end_date,
+            'completed',
+            NULL,
+            NULL
+        FROM CounselingSessions
+        WHERE end_date < CURRENT_TIMESTAMP
+        ORDER BY end_date DESC
+        LIMIT 1;
+    END IF;
+    
+    -- Return the result
+    SELECT 
+        Round_Number,
+        Session_Name,
+        start_Date,
+        end_date,
+        round_status,
+        next_round_number,
+        next_round_start,
+        CASE
+            WHEN round_status = 'current' THEN TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP, end_date)
+            WHEN round_status = 'next' THEN TIMESTAMPDIFF(SECOND, CURRENT_TIMESTAMP, start_Date)
+            ELSE 0
+        END * 1000 as timeRemaining
+    FROM temp_round_status;
+    
+    -- Clean up
+    DROP TEMPORARY TABLE IF EXISTS temp_round_status;
+END //
+
+DELIMITER ;
+
+
+
+
 -- SETUP FOR DEMO
 use clean_counselling;
 
