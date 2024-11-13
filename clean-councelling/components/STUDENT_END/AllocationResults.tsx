@@ -1,8 +1,9 @@
 // app/components/STUDENT_END/AllocationResults.tsx
+'use client'
 import React from 'react';
 import { CheckCircle2, AlertCircle, ArrowUpCircle, LockIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
+import { useRouter } from 'next/navigation';
 interface AllocationResult {
     College_Name: string;
     Course_Name: string;
@@ -16,13 +17,16 @@ interface AllocationResultsProps {
     allocation: AllocationResult | null;
     onDecisionSubmit: (decision: 'freeze' | 'slide') => Promise<void>;
     loading?: boolean;
+    loginId: string | number; 
 }
 
 export default function AllocationResults({
     allocation,
     onDecisionSubmit,
-    loading = false
+    loading = false,
+    loginId
 }: AllocationResultsProps) {
+    const router = useRouter();
     if (loading) {
         return (
             <Card className="w-full max-w-2xl mx-auto bg-gray-800 border-gray-700">
@@ -30,8 +34,10 @@ export default function AllocationResults({
                     <div className="animate-pulse flex flex-col items-center space-y-4">
                         <div className="h-6 bg-gray-700 rounded w-3/4"></div>
                         <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+
                     </div>
                 </CardContent>
+                
             </Card>
         );
     }
@@ -114,6 +120,10 @@ export default function AllocationResults({
                                     <span className="text-teal-400 font-semibold capitalize">
                                         {allocation.has_frozen ? 'frozen' : allocation.Decision}
                                     </span>
+                                    {/* <button className="w-full py-3 bg-gray-700 text-gray-400 font-semibold" 
+                onClick={() =>  router.push(`/payments?loginId=${loginId}`) }>
+                    Payments 
+                </button> */}
                                 </p>
                             </div>
                         )}

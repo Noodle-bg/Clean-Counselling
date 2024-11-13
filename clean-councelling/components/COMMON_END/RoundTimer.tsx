@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, AlertCircle } from 'lucide-react';
 
 interface RoundInfo {
     Round_Number: number;
@@ -8,6 +8,8 @@ interface RoundInfo {
     end_date: string;
     round_status: 'current' | 'next' | 'completed';
     timeRemaining: number;
+    next_round_number: number | null;
+    next_round_start: string | null;
 }
 
 export default function RoundTimer() {
@@ -15,21 +17,25 @@ export default function RoundTimer() {
     const [timeDisplay, setTimeDisplay] = useState<string>('');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchRoundInfo = async () => {
-            try {
-                const response = await fetch('/api/COMMON_END/currentRound');
-                const data = await response.json();
-                if (data.currentRound) {
-                    setRoundInfo(data.currentRound);
+    const fetchRoundInfo = async () => {
+        try {
+            const response = await fetch('/api/COMMON_END/currentRound');
+            const data = await response.json();
+            if (data.currentRound) {
+                setRoundInfo(data.currentRound);
+                // If the current round is ending, schedule the next update
+                if (data.currentRound.timeRemaining <= 0) {
+                    setTimeout(fetchRoundInfo, 1000);
                 }
-            } catch (error) {
-                console.error('Error fetching round info:', error);
-            } finally {
-                setLoading(false);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching round info:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchRoundInfo();
         // Refresh round info every minute
         const interval = setInterval(fetchRoundInfo, 60000);
@@ -44,7 +50,12 @@ export default function RoundTimer() {
             let timeRemaining = roundInfo.timeRemaining - (new Date().getTime() - now);
 
             if (timeRemaining < 0) {
-                setTimeDisplay('Time expired');
+                // If time expired and we have next round info, fetch new round status
+                if (roundInfo.next_round_number) {
+                    fetchRoundInfo();
+                    return;
+                }
+                setTimeDisplay('All rounds completed');
                 return;
             }
 
@@ -54,8 +65,8 @@ export default function RoundTimer() {
             const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
             const display = roundInfo.round_status === 'current'
-                ? `Round ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`
-                : `Next round starts in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                ? `Round ${roundInfo.Round_Number} ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`
+                : `Round ${roundInfo.Round_Number} starts in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
             setTimeDisplay(display);
         };
@@ -76,7 +87,8 @@ export default function RoundTimer() {
 
     if (!roundInfo) {
         return (
-            <div className="bg-gray-800 rounded-lg p-4">
+            <div className="bg-gray-800 rounded-lg p-4 flex items-center gap-2">
+                <AlertCircle className="text-gray-400 w-5 h-5" />
                 <p className="text-gray-400">No active rounds scheduled</p>
             </div>
         );
@@ -87,12 +99,15 @@ export default function RoundTimer() {
             <div className="flex items-center gap-2 mb-2">
                 <Clock className="w-5 h-5 text-teal-400" />
                 <h3 className="text-lg font-semibold text-teal-400">
-                    Round {roundInfo.Round_Number}: {roundInfo.Session_Name}
+                    {roundInfo.Session_Name}
                 </h3>
             </div>
-            <p className="text-white font-mono">
-                {timeDisplay}
-            </p>
+            <p className="text-white font-mono">{timeDisplay}</p>
+            {roundInfo.next_round_number && (
+                <p className="text-gray-400 text-sm mt-2">
+                    Next: Round {roundInfo.next_round_number}
+                </p>
+            )}
         </div>
     );
 }

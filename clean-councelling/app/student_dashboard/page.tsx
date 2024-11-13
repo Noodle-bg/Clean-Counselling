@@ -8,6 +8,7 @@ import PreferencesForm from '@/components/STUDENT_END/PreferencesForm';
 import RoundTimer from '@/components/COMMON_END/RoundTimer';
 import AllocationResults from '@/components/STUDENT_END/AllocationResults';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {query } from '@/lib/db';
 
 interface AllocationResult {
     College_Name: string;
@@ -29,23 +30,36 @@ export default function StudentDashboard() {
 
     const handlePreferencesClick = async () => {
         try {
-            setLoading(true);
-            const response = await fetch('/api/STUDENT_END/preferences/check-round');
-            const data = await response.json();
-
-            if (!data.canSubmitPreferences) {
-                setError(data.message);
-                return;
-            }
-
-            setShowPreferencesForm(true);
-            setError(null);
+          setLoading(true);
+          
+          // First check if preferences are frozen
+          const freezeResponse = await fetch(`/api/STUDENT_END/freeze/${user.Student_id}`);
+          const freezeData = await freezeResponse.json();
+    
+          if (freezeData.has_frozen) {
+            setError('Your preferences have been frozen and cannot be modified');
+            return;
+          }
+    
+          // Then check if round is active
+          const response = await fetch('/api/STUDENT_END/preferences/check-round');
+          const data = await response.json();
+          
+          if (!data.canSubmitPreferences) {
+            setError(data.message);
+            return;
+          }
+    
+          setShowPreferencesForm(true);
+          setError(null);
         } catch (error) {
-            setError('Failed to check round status');
+          setError('Failed to check preferences status');
+          console.error('Error:', error);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+    
 
     const handleViewResults = async () => {
         if (!user?.Student_id) return;
@@ -193,6 +207,8 @@ export default function StudentDashboard() {
                             allocation={allocation}
                             onDecisionSubmit={handleDecision}
                             loading={loading}
+                            loginId={user?.Student_id} //
+
                         />
                     </div>
                 )}
