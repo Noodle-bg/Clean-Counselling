@@ -6,7 +6,10 @@ use clean_counselling;
 CREATE TABLE Colleges (
     College_Id INT PRIMARY KEY AUTO_INCREMENT,
     College_Name VARCHAR(100),
-    Seat_Freezing_Price DECIMAL(10,2)
+    Seat_Freezing_Price DECIMAL(10,2),
+    remaining_general INT,
+    remaining_obc INT,
+    remaining_scst INT
 );
 
 -- Courses Table
@@ -24,7 +27,8 @@ CREATE TABLE Students (
     Parent_Name VARCHAR(100),
     Parent_Phone_Number VARCHAR(15),
     Category ENUM('General', 'OBC', 'SC/ST'),
-    student_rank INT
+    student_rank INT,
+    has_frozen BOOLEAN
 );
 
 -- Category Fee Percentage Table
@@ -61,7 +65,7 @@ CREATE TABLE SeatAllocation (
     Course_Id INT,
     Round_Id INT,
     Status ENUM('allocated', 'not allocated'),
-    Decision ENUM('freeze', 'float', 'slide'),
+    Decision ENUM('freeze', 'slide'),
     PRIMARY KEY (Student_Id, College_Id, Course_Id),
     FOREIGN KEY (Student_Id) REFERENCES Students(Student_Id),
     FOREIGN KEY (College_Id) REFERENCES Colleges(College_Id),
